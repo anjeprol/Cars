@@ -9,4 +9,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activity.MenuActivity">
 
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="logout"/>
+
+    <ImageView
+        android:id="@+id/ivTest"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="image"
+        android:layout_below="@+id/btn_logout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

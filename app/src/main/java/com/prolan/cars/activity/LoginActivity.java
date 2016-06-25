@@ -39,6 +39,8 @@ public class LoginActivity extends AppCompatActivity{
         til_pass.setErrorEnabled(false);
         til_user.setErrorEnabled(false);
         etPass.setText("");
+
+
     }
 
     public void login(View view)  {
@@ -61,7 +63,7 @@ public class LoginActivity extends AppCompatActivity{
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(intent);
+                        startActivity(intent);
                 }
             }, 1500);
 
