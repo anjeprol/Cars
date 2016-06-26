@@ -1,23 +1,28 @@
 package com.prolan.cars.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.prolan.cars.R;
+import com.prolan.cars.helper.SwipeListAdapter;
 import com.prolan.cars.model.Make;
 import com.prolan.cars.model.Pojo;
 import com.prolan.cars.rest.ApiClient;
 import com.prolan.cars.rest.ApiInterface;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,21 +30,42 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
     private final static String API_KEY = "nwzrbm8ptaysjt8au7sev3z9";
     private final static int YEAR = 2014;
     private final static String VIEW = "basic";
     private final static String FMT = "json";
     private static final String TAG = "DEBUG";
-    ImageView imageView;
+  //  ImageView imageView;
     private Context context ;
+
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ListView listView;
+    private SwipeListAdapter adapter;
+    private Call<Pojo> call ;
+    private List<Make> makes;
+   // private List<Pojo> pojoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         context = this;
-        callService();
+
+        listView = (ListView) findViewById(R.id.listView);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+
+
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                callService();
+            }
+        });
 
     }
 
@@ -47,48 +73,39 @@ public class MenuActivity extends AppCompatActivity {
     public void callService(){
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
-        Call<Pojo> call = apiService.getPojo(YEAR,VIEW,FMT,API_KEY);
+        call = apiService.getPojo(YEAR,VIEW,FMT,API_KEY);
         call.enqueue(new Callback<Pojo>() {
             @Override
             public void onResponse(Call<Pojo> call, Response<Pojo> response) {
-                List<Make> makes = response.body().getMakes();
-                loadImg(imageView);
+                makes = response.body().getMakes();
+               // loadImg(imageView);
                 Log.d(TAG,"Data received:"+makes.size());
+
+                //makes = new ArrayList<>();
+                adapter = new SwipeListAdapter((Activity) context,makes,context);
+                listView.setAdapter(adapter);
+                // stopping swipe refresh
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<Pojo> call, Throwable t) {
                 Log.d(TAG,"Error retrieving data: "+t.getMessage());
+                // stopping swipe refresh
+                swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(context,"Unable to retrieve information, loading local data",Toast.LENGTH_LONG).show();
             }
         });
     }
+
+
 
     @Override
     public void onBackPressed() {
        home();
     }
 
-    public void loadImg(View view) {
-        HashMap<String, String> mapMakers = new HashMap<String, String>();
-        mapMakers.put("acura", "https://db.tt/VHWzlkhi");
-        mapMakers.put("audi", "https://db.tt/EzNGhMQu");
-        mapMakers.put("aston martin", "https://db.tt/XNGIDa6q");
-        mapMakers.put("nia","https://db.tt/FS5q2zzh");
-        imageView = (ImageView) findViewById(R.id.ivTest);
-        String brand = "audi";
-        if (mapMakers.containsKey(brand)) {
 
-            Picasso.with(this)
-                    .load(mapMakers.get(brand))
-                    .into(imageView);
-
-        }else{
-            Picasso.with(this)
-                    .load(mapMakers.get("nia"))
-                    .into(imageView);
-        }
-    }
 
     public void logout(View view) {
         home();
@@ -113,7 +130,10 @@ public class MenuActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
 
-
+    @Override
+    public void onRefresh() {
+        callService();
     }
 }
