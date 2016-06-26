@@ -1,6 +1,8 @@
 
 package com.prolan.cars.model;
 
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;

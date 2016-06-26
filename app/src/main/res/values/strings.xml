@@ -7,4 +7,5 @@
 
     <string name="alert_opt_not">No</string>
     <string name="alert_opt_yes">yes</string>
+    <string name="title_activity_details">Details</string>
 </resources>
