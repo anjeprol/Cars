@@ -1,6 +1,7 @@
 
 package com.prolan.cars.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;

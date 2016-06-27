@@ -40,16 +40,21 @@ public class SwipeListAdapter extends BaseAdapter {
     private List<Make> pojoList;
     private Context context ;
     private Intent intent;
+    private int offset = 0;
 
-    public SwipeListAdapter(Activity activity, List<Make> pojoList,Context context) {
+    public SwipeListAdapter(Activity activity, List<Make> pojoList,Context context,int size) {
         this.activity = activity;
         this.pojoList = pojoList;
         this.context = context;
+        if(offset<=pojoList.size())
+            this.offset = size;
+        else
+            this.offset = pojoList.size();
     }
 
     @Override
     public int getCount() {
-        return pojoList.size();
+        return offset;
     }
 
     @Override
@@ -67,7 +72,6 @@ public class SwipeListAdapter extends BaseAdapter {
 
         String URL_BASE = "http://www.carlogos.org/uploads/car-logos/";
         String POST_NAME ="-logo-2.jpg";
-        String POST_NAME2 = "-logo.jpg";
 
         if(inflater == null)
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

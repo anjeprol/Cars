@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,6 +36,8 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
     private final static String FMT = "json";
     private static final String TAG = "DEBUG";
     private Context context ;
+    private int initOffSet = 20;
+
 
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -41,7 +45,6 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
     private SwipeListAdapter adapter;
     private Call<Pojo> call ;
     private List<Make> makes;
-   // private List<Pojo> pojoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,21 +55,21 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
         listView = (ListView) findViewById(R.id.listView);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
+        Toast.makeText(this,"↓ Swipe down to load more records ↓", Toast.LENGTH_LONG).show();
 
         swipeRefreshLayout.setOnRefreshListener(this);
-
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(true);
-                callService();
+                callService(initOffSet);
             }
         });
 
     }
 
 
-    public void callService(){
+    public void callService(final int offSet){
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
         call = apiService.getPojo(YEAR,VIEW,FMT,API_KEY);
@@ -74,11 +77,9 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public void onResponse(Call<Pojo> call, Response<Pojo> response) {
                 makes = response.body().getMakes();
-               // loadImg(imageView);
                 Log.d(TAG,"Data received:"+makes.size());
 
-
-                adapter = new SwipeListAdapter((Activity) context,makes,context);
+                adapter = new SwipeListAdapter((Activity) context,makes,context,offSet);
                 listView.setAdapter(adapter);
                 // stopping swipe refresh
                 swipeRefreshLayout.setRefreshing(false);
@@ -102,13 +103,11 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
 
-
     public void logout(View view) {
         home();
     }
 
     private void home(){
-
         new AlertDialog.Builder(context)
                 .setTitle("Logout")
                 .setMessage("Are you sure you want to sing out?")
@@ -130,6 +129,15 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        callService();
+
+        if(initOffSet < makes.size()) {
+            Toast.makeText(this, initOffSet - 15 + " More records where added", Toast.LENGTH_LONG).show();
+            callService(initOffSet += 5);
+        }
+        else {
+            Toast.makeText(this,"ALL elements displayed", Toast.LENGTH_LONG).show();
+            callService(makes.size());
+        }
     }
+
 }
