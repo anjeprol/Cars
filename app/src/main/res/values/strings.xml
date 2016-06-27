@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cars</string>
+    <string name="app_name">Cars Catalog</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="msg_empty">This field is required</string>

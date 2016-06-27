@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,10 +19,8 @@ import com.prolan.cars.model.Make;
 import com.prolan.cars.model.Pojo;
 import com.prolan.cars.rest.ApiClient;
 import com.prolan.cars.rest.ApiInterface;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,7 +33,6 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
     private final static String VIEW = "basic";
     private final static String FMT = "json";
     private static final String TAG = "DEBUG";
-  //  ImageView imageView;
     private Context context ;
 
 
@@ -81,7 +77,7 @@ public class MenuActivity extends AppCompatActivity implements SwipeRefreshLayou
                // loadImg(imageView);
                 Log.d(TAG,"Data received:"+makes.size());
 
-                //makes = new ArrayList<>();
+
                 adapter = new SwipeListAdapter((Activity) context,makes,context);
                 listView.setAdapter(adapter);
                 // stopping swipe refresh

@@ -22,7 +22,8 @@
         android:textSize="17dp"
         android:textStyle="bold"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/tv_year"
+        android:layout_alignStart="@+id/tv_year" />
 
     <TextView
         android:id="@+id/tv_year"

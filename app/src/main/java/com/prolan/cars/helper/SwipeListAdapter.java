@@ -3,6 +3,7 @@ package com.prolan.cars.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -38,16 +39,12 @@ public class SwipeListAdapter extends BaseAdapter {
     LayoutInflater inflater;
     private List<Make> pojoList;
     private Context context ;
-    HashMap<String, String> mapMakers = new HashMap<String, String>();
     private Intent intent;
-    private boolean isEmpty = false;
 
     public SwipeListAdapter(Activity activity, List<Make> pojoList,Context context) {
         this.activity = activity;
         this.pojoList = pojoList;
         this.context = context;
-        this.loadIcons();
-        //this.imgView = imgView;
     }
 
     @Override
@@ -67,6 +64,10 @@ public class SwipeListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
+        String URL_BASE = "http://www.carlogos.org/uploads/car-logos/";
+        String POST_NAME ="-logo-2.jpg";
+        String POST_NAME2 = "-logo.jpg";
 
         if(inflater == null)
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -94,20 +95,18 @@ public class SwipeListAdapter extends BaseAdapter {
         }
 
         title.setText(brand);
-        brand = brand.toLowerCase();
+        //brand = brand.toLowerCase();
         RelativeLayout mRelLay = (RelativeLayout) convertView.findViewById(R.id.rLayout);
         mRelLay.setOnClickListener(new View.OnClickListener(){
         public void onClick(View view){
             List<Model> modelList = pojoList.get(position).getModels();
-
-
-
             Bundle mBundle = new Bundle();
             mBundle.putInt("size",modCount);
+            mBundle.putString("maker",pojoList.get(position).getName());
             for(int i =0 ; i < modCount ; i++){
                 Model model = modelList.get(i);
+                mBundle.putString("id"+i,model.getId());
                 mBundle.putString("niceName"+i,model.getNiceName());
-                mBundle.putString("name"+i,model.getName());
                 mBundle.putInt("year"+i,model.getYears().get(0).getYear());
             }
             intent = new Intent(activity, DetailsActivity.class);
@@ -117,31 +116,19 @@ public class SwipeListAdapter extends BaseAdapter {
         });
 
 
-        if (mapMakers.containsKey(brand.toLowerCase())) {
-            Picasso.with(context).load(mapMakers.get(brand)).into(imgView);
-            Log.d("DEBUG","Image Done: "+brand+" -- "+mapMakers.get(brand).toLowerCase());
+        //Picasso.with(context).load(URL_BASE+brand+POST_NAME).into(imgView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Picasso.with(context)
+                    .load(URL_BASE+brand+POST_NAME)
+                    .placeholder( activity.getDrawable(R.drawable.nia))
+                    .into(imgView);
         }else{
-            Picasso.with(context).load(mapMakers.get("nia")).into(imgView);
+            Picasso.with(context)
+                    .load(URL_BASE+brand+POST_NAME)
+                    .placeholder( context.getResources().getDrawable(R.drawable.nia))
+                    .into(imgView);
         }
-
-
-
         return convertView;
     }
-
-    private void loadIcons(){
-        mapMakers.put("acura", "https://db.tt/VHWzlkhi");
-        mapMakers.put("audi", "https://db.tt/EzNGhMQu");
-        mapMakers.put("aston martin", "https://db.tt/XNGIDa6q");
-        mapMakers.put("mazda", "https://db.tt/SJw6OWMG");
-        mapMakers.put("nia","https://db.tt/FS5q2zzh");
-
-
-
-
-    }
-
-
-
 
 }

@@ -7,8 +7,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ListView;
 
 import com.prolan.cars.R;
+import com.prolan.cars.helper.ListAdapterDetails;
 import com.prolan.cars.model.Model;
 import com.prolan.cars.model.Year;
 
@@ -17,32 +19,54 @@ import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
     private Intent intent ;
+    ListAdapterDetails adapterDetails;
+    ListView listViewDetail;
+    List<Model> modelList = new ArrayList<Model>();
+    List<Year> yearList = new ArrayList<Year>();
+    Bundle mBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        listViewDetail = (ListView) findViewById(R.id.listViewDetails);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         intent = getIntent();
-        Bundle mBundle = intent.getExtras();
+        modelList = getExtras(modelList);
+        toolbar.setTitle(mBundle.getString("maker"));
+        setSupportActionBar(toolbar);
+        infListView();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
+
+    private List<Model> getExtras(List<Model> modelListExtra){
+
+        mBundle = intent.getExtras();
         int size = mBundle.getInt("size");
-        List<Model> modelList = new ArrayList<Model>();
         Model model ;
-        List<Year> yearList = new ArrayList<Year>();
         Year mYear ;
 
         for(int i = 0 ; i < size ; i++){
             mYear = new Year() ;
             model = new Model();
+            model.setId(mBundle.getString("id"+i));
             model.setNiceName(mBundle.getString("niceName"+i));
-            model.setName(mBundle.getString("name"+i));
             mYear.setYear(mBundle.getInt("year"+i));
             yearList.add(mYear);
-            modelList.add(model);
+            model.setYears(yearList);
+            modelListExtra.add(model);
         }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        return modelListExtra;
+    }
+
+    private void infListView(){
+        adapterDetails = new ListAdapterDetails(this,modelList);
+        listViewDetail.setAdapter(adapterDetails);
     }
 
 }
